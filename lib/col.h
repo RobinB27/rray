@@ -1,0 +1,44 @@
+#ifndef RREN_COL_H
+#define RREN_COL_H
+
+#include <stdint.h>
+
+typedef uint32_t col_t;
+
+#define C_WHITE 0xFF000000u
+#define C_BLACK 0xFFFFFFFFu
+
+#define CH_R(col) ((uint8_t)(((col) >> 16) & 0xFFu))
+#define CH_G(col) ((uint8_t)(((col) >> 8) & 0xFFu))
+#define CH_B(col) ((uint8_t)((col) & 0xFFu))
+
+static inline col_t col_rgb(uint8_t r, uint8_t g, uint8_t b) {
+	return 0xFF000000u | (uint32_t)r << 16 | (uint32_t)g << 8 | b;
+}
+
+static inline uint8_t ch_mul(uint8_t c, uint8_t k) {
+	unsigned t = c * k + 128;
+	return (uint8_t)((t + (t >> 8)) >> 8); // (c * k + 127) / 255
+}
+
+static inline uint8_t ch_add(uint8_t c, uint8_t k) {
+	unsigned s = c + k;
+	return (uint8_t)(s > 255 ? 255 : s);
+}
+
+static inline col_t col_mul(col_t color, uint8_t k) {
+	return col_rgb(ch_mul(CH_R(color), k), ch_mul(CH_G(color), k),
+	               ch_mul(CH_B(color), k));
+}
+
+static inline col_t col_addk(col_t color, uint8_t k) {
+	return col_rgb(ch_add(CH_R(color), k), ch_add(CH_G(color), k),
+	               ch_add(CH_B(color), k));
+}
+
+static inline col_t col_add(col_t a, col_t b) {
+	return col_rgb(ch_add(CH_R(a), CH_R(b)), ch_add(CH_G(a), CH_G(b)),
+	               ch_add(CH_B(a), CH_B(b)));
+}
+
+#endif

@@ -1,28 +1,35 @@
 #ifndef RREN_FRAMEBUF_H
 #define RREN_FRAMEBUF_H
 
+#include "col.h"
 #include <stdint.h>
+#include <stdlib.h>
+
+#define FB_WIDTH 320
+#define FB_HEIGHT 180
+#define W_SCALE 4
 
 typedef struct {
-    uint32_t width;
-    uint32_t height;
-    uint32_t *buf;
+	int width;
+	int height;
+	col_t *buf;
 } framebuf;
 
-typedef uint32_t col_t;
-
-framebuf *fb_make(uint32_t width, uint32_t height);
+framebuf *fb_make(int width, int height);
 void fb_free(framebuf *fb);
 void fb_clear(framebuf *fb, col_t color);
-void fb_rect(framebuf *fb, col_t color, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+int fb_rect(framebuf *fb, col_t color, int x, int y, int w, int h);
 
-static inline col_t rgb(uint8_t r, uint8_t g, uint8_t b) {
-    return 0xFF000000u | (uint32_t)r << 16 | (uint32_t)g << 8 | b;
+static inline int fb_put(framebuf *fb, col_t color, int x, int y) {
+	if (x < fb->width && y < fb->height && x >= 0 && y >= 0) {
+		fb->buf[y * fb->width + x] = color;
+		return EXIT_SUCCESS;
+	}
+	return EXIT_FAILURE;
 }
 
-static inline void fb_put(framebuf *fb, col_t color, uint32_t x, uint32_t y) {
-    if (x < fb->width && y < fb->height) 
-        fb->buf[y*fb->width + x] = color;
+static inline int fb_putc(framebuf *fb, col_t color, int x, int y) {
+	return fb_put(fb, color, FB_WIDTH / 2 + x, FB_HEIGHT / 2 - y);
 }
 
 #endif
