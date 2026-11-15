@@ -8,25 +8,29 @@ typedef struct {
 	float x, y, z;
 } Vec3;
 
-static inline Vec3 vec3_add(Vec3 a, Vec3 b) {
-	return (Vec3){a.x + b.x, a.y + b.y, a.z + b.z};
+static inline Vec3 vec3_add(Vec3 A, Vec3 B) {
+	return (Vec3){A.x + B.x, A.y + B.y, A.z + B.z};
 }
 
-static inline float vec3_dot(Vec3 a, Vec3 b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z;
+static inline float vec3_dot(Vec3 A, Vec3 B) {
+	return A.x * B.x + A.y * B.y + A.z * B.z;
 }
 
-static inline Vec3 vec3_muli(Vec3 a, float k) {
-	return (Vec3){k * a.x, k * a.y, k * a.z};
+static inline Vec3 vec3_mulf(Vec3 A, float f) {
+	return (Vec3){f * A.x, f * A.y, f * A.z};
 }
 
-static inline Vec3 vec3_sub(Vec3 a, Vec3 b) {
-	return vec3_add(a, vec3_muli(b, -1.0f));
+static inline Vec3 vec3_sub(Vec3 A, Vec3 B) {
+	return vec3_add(A, vec3_mulf(B, -1.0f));
+}
+
+static inline Vec3 vec3_reflect(Vec3 A, Vec3 B) {
+    return vec3_sub(vec3_mulf(B, 2.0f * vec3_dot(B, A)), A);
 }
 
 static inline float vec3_norm(Vec3 a) { return sqrt(vec3_dot(a, a)); }
 
-static inline Vec3 vec3_unit(Vec3 a) { return vec3_muli(a, 1 / vec3_norm(a)); }
+static inline Vec3 vec3_unit(Vec3 a) { return vec3_mulf(a, 1 / vec3_norm(a)); }
 
 static inline int imin(int a, int b) { return a < b ? a : b; }
 

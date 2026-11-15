@@ -6,8 +6,8 @@
 
 typedef uint32_t col_t;
 
-#define C_WHITE 0xFF000000u
-#define C_BLACK 0xFFFFFFFFu
+#define C_BLACK 0xFF000000u
+#define C_WHITE 0xFFFFFFFFu
 
 #define CH_R(col) ((uint8_t)(((col) >> 16) & 0xFFu))
 #define CH_G(col) ((uint8_t)(((col) >> 8) & 0xFFu))
@@ -32,9 +32,16 @@ static inline col_t col_mul(col_t color, uint8_t k) {
 	               ch_mul(CH_B(color), k));
 }
 
-// float->int conversions round down, so +0.5f to round to nearest int
+static inline uint8_t ch_from_float(float v) {
+    if (!(v > 0.0f)) return 0;
+    if (v >= 255.0f) return 255;
+    return (uint8_t)(v + 0.5f);	// Add 0.5f to round to nearest int
+}
+
 static inline col_t col_mulf(col_t color, float f) {
-	return col_mul(color, (uint8_t)(clampf(f, 0.0f, 1.0f) * 255.0f + 0.5f));
+    return col_rgb(ch_from_float(CH_R(color) * f),
+                   ch_from_float(CH_G(color) * f),
+                   ch_from_float(CH_B(color) * f));
 }
 
 static inline col_t col_addk(col_t color, uint8_t k) {

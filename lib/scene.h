@@ -12,6 +12,7 @@ typedef struct {
 	ShapeType type;
 	col_t color;
 	int specular;
+	float reflective;
 	union {
 		struct {
 			Vec3 pos;
@@ -50,10 +51,11 @@ typedef struct {
 	Vla_Light *lights;
 } Scene;
 
-static inline Shape make_sphere(Vec3 pos, float r, col_t color, int specular) {
+static inline Shape make_sphere(Vec3 pos, float r, col_t color, int specular, float reflective) {
 	return (Shape){.type = SH_SPHERE,
 	               .color = color,
 	               .specular = specular,
+				   .reflective = reflective,
 	               .Sphere = {.pos = pos, .r = r}};
 }
 
