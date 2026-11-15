@@ -1,8 +1,8 @@
 #ifndef RREN_UTIL_H
 #define RREN_UTIL_H
 
-#include "stdlib.h"
 #include "math.h"
+#include "stdlib.h"
 
 typedef struct {
 	float x, y, z;
@@ -24,13 +24,9 @@ static inline Vec3 vec3_sub(Vec3 a, Vec3 b) {
 	return vec3_add(a, vec3_muli(b, -1.0f));
 }
 
-static inline float vec3_norm(Vec3 a) {
-	return sqrt(vec3_dot(a, a));
-}
+static inline float vec3_norm(Vec3 a) { return sqrt(vec3_dot(a, a)); }
 
-static inline Vec3 vec3_unit(Vec3 a) {
-	return vec3_muli(a, 1/vec3_norm(a));
-}
+static inline Vec3 vec3_unit(Vec3 a) { return vec3_muli(a, 1 / vec3_norm(a)); }
 
 static inline int imin(int a, int b) { return a < b ? a : b; }
 
@@ -47,6 +43,5 @@ static inline float maxf(float a, float b) { return a > b ? a : b; }
 static inline float clampf(float v, float lo, float hi) {
 	return minf(maxf(v, lo), hi);
 }
-
 
 #endif

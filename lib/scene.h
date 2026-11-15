@@ -11,6 +11,7 @@ typedef enum { SH_SPHERE, SH_CUBE } ShapeType;
 typedef struct {
 	ShapeType type;
 	col_t color;
+	int specular;
 	union {
 		struct {
 			Vec3 pos;
@@ -49,16 +50,19 @@ typedef struct {
 	Vla_Light *lights;
 } Scene;
 
-static inline Shape make_sphere(Vec3 pos, float r, col_t color) {
-	return (Shape){.type=SH_SPHERE, .color=color, .Sphere={.pos=pos, .r=r}};
+static inline Shape make_sphere(Vec3 pos, float r, col_t color, int specular) {
+	return (Shape){.type = SH_SPHERE,
+	               .color = color,
+	               .specular = specular,
+	               .Sphere = {.pos = pos, .r = r}};
 }
 
 static inline Light make_plight(Vec3 pos, float i) {
-	return (Light){.type=L_POINT, .i=i, .Point={.pos=pos}};
+	return (Light){.type = L_POINT, .i = i, .Point = {.pos = pos}};
 }
 
 static inline Light make_dlight(Vec3 dir, float i) {
-	return (Light){.type=L_DIRECTIONAL, .i=i, .Directional={.dir=dir}};
+	return (Light){.type = L_DIRECTIONAL, .i = i, .Directional = {.dir = dir}};
 }
 
 Scene *scene_make();

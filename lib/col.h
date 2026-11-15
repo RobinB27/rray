@@ -1,8 +1,8 @@
 #ifndef RREN_COL_H
 #define RREN_COL_H
 
-#include <stdint.h>
 #include "util.h"
+#include <stdint.h>
 
 typedef uint32_t col_t;
 
@@ -36,7 +36,6 @@ static inline col_t col_mul(col_t color, uint8_t k) {
 static inline col_t col_mulf(col_t color, float f) {
 	return col_mul(color, (uint8_t)(clampf(f, 0.0f, 1.0f) * 255.0f + 0.5f));
 }
-
 
 static inline col_t col_addk(col_t color, uint8_t k) {
 	return col_rgb(ch_add(CH_R(color), k), ch_add(CH_G(color), k),
