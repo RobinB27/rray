@@ -33,20 +33,21 @@ void scene_free(Scene *scene) {
 }
 
 Scene *scene_example() {
-	Shape sh_a = {.type=SH_SPHERE, .color=col_rgb(255u, 0u, 0u), .Sphere={.pos={0.0f, -1.0f, 3.0f}, .r=1.0f}};
-
-	Shape sh_b = {.type=SH_SPHERE, .color=col_rgb(0u, 0u, 255u), .Sphere={.pos={2.0f, 0.0f, 4.0f}, .r=1.0f}};
-
-	Shape sh_c = {.type=SH_SPHERE, .color=col_rgb(0u, 255u, 0u), .Sphere={.pos={-2.0f, 0.0f, 4.0f}, .r=1.0f}};
-
 	Scene *scene;
 	if (!(scene = scene_make())) {
 		fprintf(stderr, "Failed to create example scene\n");
 		return NULL;
 	}
-	vla_push(scene->elements, sh_a);
-	vla_push(scene->elements, sh_b);
-	vla_push(scene->elements, sh_c);
+
+	scene->i_ambient = 0.2;
+
+	vla_push(scene->elements, make_sphere((Vec3){ 0, -1, 3}, 1.0f, col_rgb(255u, 0u, 0u)));
+	vla_push(scene->elements, make_sphere((Vec3){ 2,  0, 4}, 1.0f, col_rgb(0u, 0u, 255u)));
+	vla_push(scene->elements, make_sphere((Vec3){-2,  0, 4}, 1.0f, col_rgb(0u, 255u, 0u)));
+	vla_push(scene->elements, make_sphere((Vec3){0,  -5001, 0}, 5000.0f, col_rgb(255u, 255u, 0u)));
+
+	vla_push(scene->lights, make_plight((Vec3){2, 1, 0}, 0.6f));
+	vla_push(scene->lights, make_dlight((Vec3){1, 4, 4}, 0.2f));
 
 	return scene;
 }

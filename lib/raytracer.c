@@ -35,6 +35,36 @@ Ray_Result intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
 	                    (-b - sqrt(disc)) / (2 * a)};
 }
 
+
+float compute_lighting(Scene *scene, Vec3 P, Vec3 N) {
+    float intensity = 0.0;
+
+    intensity += scene->i_ambient;
+
+    for (unsigned i = 0; i < scene->lights->len; i++) {
+        Light *light = &scene->lights->data[i];
+
+        Vec3 L = (Vec3){0,0,0};
+        switch (light->type) {
+            case L_POINT:
+                L = vec3_sub(light->Point.pos, P);
+                break;
+            case L_DIRECTIONAL:
+                L = light->Directional.dir;
+                break;
+            default:
+                fprintf(stderr, "Light has invalid type\n");
+                exit(EXIT_FAILURE);
+        }
+        float dot_NL = vec3_dot(N, L);
+        if (dot_NL > 0) {
+            intensity += light->i * dot_NL/(vec3_norm(N)*vec3_norm(L));
+        }
+    }
+
+    return intensity;
+}
+
 col_t trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max) {
 	float closest_t = TRACE_LIMIT;
 	Shape *closest_sh = NULL;
@@ -59,7 +89,13 @@ col_t trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max) {
 	if (closest_sh == NULL)
 		return C_BLACK;
 
-	return closest_sh->color;
+    // Compute intersection P and normal N
+    // Warning: Only supports Spheres
+    Vec3 P = vec3_add(O, vec3_muli(D, closest_t));
+    Vec3 N = vec3_sub(P, closest_sh->Sphere.pos);
+    N = vec3_unit(N);
+
+	return col_mulf(closest_sh->color, compute_lighting(scene, P, N));
 }
 
 int render(framebuf *fb, Scene *scene) {

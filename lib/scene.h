@@ -29,14 +29,13 @@ typedef enum { L_POINT, L_DIRECTIONAL } LightType;
 
 typedef struct {
 	LightType type;
+	float i;
 	union {
 		struct {
 			Vec3 pos;
-			float i;
 		} Point;
 		struct {
 			Vec3 dir;
-			float i;
 		} Directional;
 	};
 } Light;
@@ -49,6 +48,18 @@ typedef struct {
 	Vla_Shape *elements;
 	Vla_Light *lights;
 } Scene;
+
+static inline Shape make_sphere(Vec3 pos, float r, col_t color) {
+	return (Shape){.type=SH_SPHERE, .color=color, .Sphere={.pos=pos, .r=r}};
+}
+
+static inline Light make_plight(Vec3 pos, float i) {
+	return (Light){.type=L_POINT, .i=i, .Point={.pos=pos}};
+}
+
+static inline Light make_dlight(Vec3 dir, float i) {
+	return (Light){.type=L_DIRECTIONAL, .i=i, .Directional={.dir=dir}};
+}
 
 Scene *scene_make();
 void scene_free(Scene *scene);

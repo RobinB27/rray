@@ -2,6 +2,7 @@
 #define RREN_COL_H
 
 #include <stdint.h>
+#include "util.h"
 
 typedef uint32_t col_t;
 
@@ -30,6 +31,12 @@ static inline col_t col_mul(col_t color, uint8_t k) {
 	return col_rgb(ch_mul(CH_R(color), k), ch_mul(CH_G(color), k),
 	               ch_mul(CH_B(color), k));
 }
+
+// float->int conversions round down, so +0.5f to round to nearest int
+static inline col_t col_mulf(col_t color, float f) {
+	return col_mul(color, (uint8_t)(clampf(f, 0.0f, 1.0f) * 255.0f + 0.5f));
+}
+
 
 static inline col_t col_addk(col_t color, uint8_t k) {
 	return col_rgb(ch_add(CH_R(color), k), ch_add(CH_G(color), k),

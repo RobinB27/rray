@@ -80,6 +80,7 @@ int main(int argc, char *argv[]) {
 		SDL_RenderPresent(renderer);
 	}
 
+	scene_free(scene);
 	fb_free(fb);
 	SDL_DestroyTexture(screen);
 	SDL_DestroyRenderer(renderer);
