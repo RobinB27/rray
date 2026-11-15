@@ -3,21 +3,30 @@
 
 #include "stdlib.h"
 
-#define VLA_MAX_CAP 4096
-#define VLA_DEFAULT_CAP 16
-
 typedef struct {
-	int *data;
-	size_t len;
-	size_t cap;
-} Vla_Int;
+	float x, y, z;
+} Vec3;
 
-void vla_free(Vla_Int *arr);
-Vla_Int *vla_make();
-int vla_push(Vla_Int *arr, int value);
+static inline Vec3 vec3_add(Vec3 a, Vec3 b) {
+	return (Vec3){a.x + b.x, a.y + b.y, a.z + b.z};
+}
+
+static inline float vec3_dot(Vec3 a, Vec3 b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+static inline Vec3 vec3_mulk(Vec3 a, float k) {
+	return (Vec3){k * a.x, k * a.y, k * a.z};
+}
+
+static inline Vec3 vec3_sub(Vec3 a, Vec3 b) {
+	return vec3_add(a, vec3_mulk(b, -1.0f));
+}
 
 static inline int imin(int a, int b) { return a < b ? a : b; }
+
 static inline int imax(int a, int b) { return a > b ? a : b; }
+
 static inline int iclamp(int v, int lo, int hi) {
 	return imin(imax(v, lo), hi);
 }

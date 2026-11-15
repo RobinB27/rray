@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define FB_WIDTH 320
-#define FB_HEIGHT 180
-#define W_SCALE 4
+#define FB_WIDTH 1280
+#define FB_HEIGHT 720
+#define W_SCALE 1
 
 typedef struct {
 	int width;

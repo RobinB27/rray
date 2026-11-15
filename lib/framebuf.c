@@ -39,8 +39,8 @@ void fb_free(framebuf *fb) {
 }
 
 void fb_clear(framebuf *fb, col_t color) {
-	for (unsigned i = 0; i < fb->width; i++)
-		for (unsigned j = 0; j < fb->height; j++)
+	for (int i = 0; i < fb->height; i++)
+		for (int j = 0; j < fb->width; j++)
 			fb->buf[i * fb->width + j] = color;
 }
 
@@ -51,8 +51,8 @@ int fb_rect(framebuf *fb, col_t color, int x, int y, int w, int h) {
 	int limx = imin(x + w, fb->width);
 	int limy = imin(y + h, fb->height);
 
-	for (unsigned i = imax(y, 0); i < limy; i++)
-		for (unsigned j = imax(x, 0); j < limx; j++)
+	for (int i = imax(y, 0); i < limy; i++)
+		for (int j = imax(x, 0); j < limx; j++)
 			fb->buf[i * fb->width + j] = color;
 	return EXIT_SUCCESS;
 }

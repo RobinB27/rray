@@ -52,8 +52,8 @@ int main(int argc, char *argv[]) {
 	float mouse_x = FB_WIDTH / 2.0f, mouse_y = FB_HEIGHT / 2.0f;
 	bool running = true;
 
-    // rren setup
-    Scene *scene = scene_example();
+	// rren setup
+	Scene *scene = scene_example();
 
 	while (running) {
 		SDL_Event e;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		// rren
-        render(fb, scene);
+		render(fb, scene);
 		// rren off
 
 		SDL_UpdateTexture(screen, NULL, fb->buf,
