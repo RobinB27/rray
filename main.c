@@ -14,6 +14,9 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
+	(void)argc;
+	(void)argv;
+
 	if (!SDL_Init(SDL_INIT_VIDEO)) {
 		SDL_Log("SDL_Init failed: %s", SDL_GetError());
 		return EXIT_FAILURE;
@@ -43,7 +46,7 @@ int main(int argc, char *argv[]) {
 
 	SDL_SetTextureScaleMode(screen, SDL_SCALEMODE_LINEAR);
 
-	framebuf *fb;
+	FrameBuffer *fb;
 	if (!(fb = fb_make(FB_WIDTH, FB_HEIGHT))) {
 		SDL_Log("Framebuffer creation failed");
 		return EXIT_FAILURE;
@@ -51,6 +54,9 @@ int main(int argc, char *argv[]) {
 
 	float mouse_x = FB_WIDTH / 2.0f, mouse_y = FB_HEIGHT / 2.0f;
 	bool running = true;
+	
+	(void)mouse_x;
+	(void)mouse_y;
 
 	// rren setup
 	Scene *scene = scene_example();

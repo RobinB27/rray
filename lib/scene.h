@@ -10,7 +10,7 @@ typedef enum { SH_SPHERE, SH_CUBE } ShapeType;
 
 typedef struct {
 	ShapeType type;
-	col_t color;
+	Color color;
 	int specular;
 	float reflective;
 	union {
@@ -42,16 +42,16 @@ typedef struct {
 	};
 } Light;
 
-typedef VLA(Shape) Vla_Shape;
-typedef VLA(Light) Vla_Light;
+typedef VLA(Shape) VlaShape;
+typedef VLA(Light) VlaLight;
 
 typedef struct {
 	float i_ambient;
-	Vla_Shape *elements;
-	Vla_Light *lights;
+	VlaShape *elements;
+	VlaLight *lights;
 } Scene;
 
-static inline Shape make_sphere(Vec3 pos, float r, col_t color, int specular, float reflective) {
+static inline Shape make_sphere(Vec3 pos, float r, Color color, int specular, float reflective) {
 	return (Shape){.type = SH_SPHERE,
 	               .color = color,
 	               .specular = specular,

@@ -6,17 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-framebuf *fb_make(int width, int height) {
+FrameBuffer *fb_make(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		fprintf(stderr, "Couldn't make framebuffer: width=%d, height=%d", width,
 		        height);
 		return NULL;
 	}
 
-	framebuf *fb;
-	col_t *buf;
+	FrameBuffer *fb;
+	Color *buf;
 
-	if (!(fb = (framebuf *)calloc(1, sizeof(*fb)))) {
+	if (!(fb = (FrameBuffer *)calloc(1, sizeof(*fb)))) {
 		fprintf(stderr, "Failed to allocate framebuffer\n");
 		return NULL;
 	}
@@ -33,18 +33,18 @@ framebuf *fb_make(int width, int height) {
 	return fb;
 }
 
-void fb_free(framebuf *fb) {
+void fb_free(FrameBuffer *fb) {
 	free(fb->buf);
 	free(fb);
 }
 
-void fb_clear(framebuf *fb, col_t color) {
+void fb_clear(FrameBuffer *fb, Color color) {
 	for (int i = 0; i < fb->height; i++)
 		for (int j = 0; j < fb->width; j++)
 			fb->buf[i * fb->width + j] = color;
 }
 
-int fb_rect(framebuf *fb, col_t color, int x, int y, int w, int h) {
+int fb_rect(FrameBuffer *fb, Color color, int x, int y, int w, int h) {
 	if (x >= fb->width || y >= fb->height || x + w < 0 || y + h < 0)
 		return EXIT_FAILURE;
 

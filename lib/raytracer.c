@@ -13,7 +13,7 @@ static inline Vec3 canvas_to_viewport(int x, int y) {
 	              (float)y * VIEWPORT_HEIGHT / FB_HEIGHT, VIEWPORT_DIST};
 }
 
-Intersect_Result closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max) {
+IntersectResult closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max) {
     float closest_t = TRACE_LIMIT;
     Shape *closest_sh = NULL;
 
@@ -22,7 +22,7 @@ Intersect_Result closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min,
 		if (shape->type != SH_SPHERE)
 			continue;
 
-		Ray_Result res = intersect_ray_sphere(O, D, shape);
+		RayResult res = intersect_ray_sphere(O, D, shape);
 
 		if (t_min < res.t1 && res.t1 < t_max && res.t1 < closest_t) {
 			closest_t = res.t1;
@@ -33,7 +33,7 @@ Intersect_Result closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min,
 			closest_sh = shape;
 		}
 	}
-    return (Intersect_Result){.sh=closest_sh, .t=closest_t};
+    return (IntersectResult){.sh=closest_sh, .t=closest_t};
 }
 
 /**
@@ -44,7 +44,7 @@ Intersect_Result closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min,
     @param shape    Sphere
     @return         Both possible intersections
 */
-Ray_Result intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
+RayResult intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
 	if (shape->type != SH_SPHERE) {
 		fprintf(stderr, "intersect_ray_sphere got non-sphere shape\n");
 		exit(EXIT_FAILURE);
@@ -60,9 +60,9 @@ Ray_Result intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
 
 	float disc = b * b - 4 * a * c;
 	if (disc < 0)
-		return (Ray_Result){TRACE_LIMIT, TRACE_LIMIT};
+		return (RayResult){TRACE_LIMIT, TRACE_LIMIT};
 
-	return (Ray_Result){(-b + sqrt(disc)) / (2 * a),
+	return (RayResult){(-b + sqrt(disc)) / (2 * a),
 	                    (-b - sqrt(disc)) / (2 * a)};
 }
 
@@ -97,7 +97,7 @@ float compute_lighting(Scene *scene, Vec3 P, Vec3 N, Vec3 V, int s) {
 		}
 
         // Shadow: check if something blocks the light
-        Intersect_Result res = closest_intersection(scene, P, L, TRACE_EPSILON, TRACE_LIMIT);
+        IntersectResult res = closest_intersection(scene, P, L, TRACE_EPSILON, TRACE_LIMIT);
         if (res.sh != NULL)
             continue;
 
@@ -129,8 +129,8 @@ float compute_lighting(Scene *scene, Vec3 P, Vec3 N, Vec3 V, int s) {
     @param t_min    Minimum ray distance
     @param t_max    Maximum ray distance
 */
-col_t trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max, int rec_depth) {
-	Intersect_Result res = closest_intersection(scene, O, D, t_min, t_max);
+Color trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max, int rec_depth) {
+	IntersectResult res = closest_intersection(scene, O, D, t_min, t_max);
 	if (res.sh == NULL)
 		return C_BLACK;
 
@@ -140,7 +140,7 @@ col_t trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max, int rec_
 	Vec3 N = vec3_sub(P, res.sh->Sphere.pos);
 	N = vec3_unit(N);
 
-	col_t local_col = col_mulf(res.sh->color,
+	Color local_col = col_mulf(res.sh->color,
 	                compute_lighting(scene, P, N, vec3_mulf(D, -1.0f),
 	                                 res.sh->specular));
     
@@ -149,18 +149,18 @@ col_t trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max, int rec_
         return local_col;
 
     Vec3 R = vec3_reflect(vec3_mulf(D, -1.0f), N);
-    col_t refl_col = trace_ray(scene, P, R, TRACE_EPSILON, TRACE_LIMIT, rec_depth-1);
+    Color refl_col = trace_ray(scene, P, R, TRACE_EPSILON, TRACE_LIMIT, rec_depth-1);
 
     return col_add(col_mulf(local_col, 1-r), col_mulf(refl_col, r));
 }
 
-int render(framebuf *fb, Scene *scene) {
+int render(FrameBuffer *fb, Scene *scene) {
 	Vec3 O = {0, 0, 0};
 
 	for (int x = -FB_WIDTH / 2; x <= FB_WIDTH / 2; x++) {
 		for (int y = -FB_HEIGHT / 2; y <= FB_HEIGHT / 2; y++) {
 			Vec3 D = canvas_to_viewport(x, y);
-			col_t color = trace_ray(scene, O, D, 1, TRACE_LIMIT, TRACE_REC_DEPTH);
+			Color color = trace_ray(scene, O, D, 1, TRACE_LIMIT, TRACE_REC_DEPTH);
 			fb_putc(fb, color, x, y);
 		}
 	}

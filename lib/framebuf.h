@@ -12,15 +12,15 @@
 typedef struct {
 	int width;
 	int height;
-	col_t *buf;
-} framebuf;
+	Color *buf;
+} FrameBuffer;
 
-framebuf *fb_make(int width, int height);
-void fb_free(framebuf *fb);
-void fb_clear(framebuf *fb, col_t color);
-int fb_rect(framebuf *fb, col_t color, int x, int y, int w, int h);
+FrameBuffer *fb_make(int width, int height);
+void fb_free(FrameBuffer *fb);
+void fb_clear(FrameBuffer *fb, Color color);
+int fb_rect(FrameBuffer *fb, Color color, int x, int y, int w, int h);
 
-static inline int fb_put(framebuf *fb, col_t color, int x, int y) {
+static inline int fb_put(FrameBuffer *fb, Color color, int x, int y) {
 	if (x < fb->width && y < fb->height && x >= 0 && y >= 0) {
 		fb->buf[y * fb->width + x] = color;
 		return EXIT_SUCCESS;
@@ -28,7 +28,7 @@ static inline int fb_put(framebuf *fb, col_t color, int x, int y) {
 	return EXIT_FAILURE;
 }
 
-static inline int fb_putc(framebuf *fb, col_t color, int x, int y) {
+static inline int fb_putc(FrameBuffer *fb, Color color, int x, int y) {
 	return fb_put(fb, color, FB_WIDTH / 2 + x, FB_HEIGHT / 2 - y);
 }
 
