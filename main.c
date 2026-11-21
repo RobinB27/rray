@@ -1,17 +1,24 @@
 #include "lib/framebuf.h"
 #include "lib/raytracer.h"
 #include "lib/scene.h"
+#include "lib/util.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main(int argc, char *argv[]) {
 	(void)argc;
@@ -31,6 +38,9 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 	SDL_SetRenderVSync(renderer, 1);
+
+	if (!SDL_SetWindowRelativeMouseMode(window, true))
+		SDL_Log("Could not enable relative mouse mode: %s", SDL_GetError());
 
 	SDL_SetRenderLogicalPresentation(renderer, FB_WIDTH, FB_HEIGHT,
 	                                 SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
@@ -52,31 +62,62 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	float mouse_x = FB_WIDTH / 2.0f, mouse_y = FB_HEIGHT / 2.0f;
-	bool running = true;
-	
-	(void)mouse_x;
-	(void)mouse_y;
-
-	// rren setup
+	// rray setup
+	Camera camera = cam_zero();
 	Scene *scene = scene_example();
 
+	struct timespec previous = {.tv_sec = 0LL, .tv_nsec = 0LL};
+	const int64_t frame_ns = NS_PER_SECOND / 60;
+
+	bool running = true;
 	while (running) {
+		struct timespec start, end;
+		clock_gettime(CLOCK_MONOTONIC, &start);
+
 		SDL_Event e;
+		Vec3 mouse_delta = vec3_zero();
+
 		while (SDL_PollEvent(&e)) {
 			SDL_ConvertEventToRenderCoordinates(renderer, &e);
 			if (e.type == SDL_EVENT_QUIT ||
 			    (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE)) {
 				running = false;
 			} else if (e.type == SDL_EVENT_MOUSE_MOTION) {
-				mouse_x = e.motion.x;
-				mouse_y = e.motion.y;
+				mouse_delta.x = e.motion.xrel;
+				mouse_delta.y = e.motion.yrel;
 			}
 		}
 
-		// rren
-		render(fb, scene);
-		// rren off
+		double dt = ns_between(previous, start);
+		previous = start;
+
+		float v = dt / 1000000000LL;
+		Vec3 V = vec3_zero();
+
+		const bool *keys = SDL_GetKeyboardState(NULL);
+		if (!keys) {
+			SDL_Log("Get keyboard state failed: %s", SDL_GetError());
+			return EXIT_FAILURE;
+		}
+
+		if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
+			V.y = v;
+		else if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
+			V.y = -v;
+		if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
+			V.x = -v;
+		else if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
+			V.x = v;
+
+		camera.pos = vec3_add(camera.pos, V);
+
+		Vec3 rot_acc = vec3_mulf(mouse_delta, 0.01);
+		camera.rot.y += rot_acc.x;
+		camera.rot.x += rot_acc.y;
+		camera.rot = vec3_clamp(camera.rot, -PI, PI);
+
+		// rray render
+		render(fb, camera, scene);
 
 		SDL_UpdateTexture(screen, NULL, fb->buf,
 		                  fb->width * (int)sizeof(Uint32));
@@ -84,6 +125,15 @@ int main(int argc, char *argv[]) {
 		SDL_RenderClear(renderer);
 		SDL_RenderTexture(renderer, screen, NULL, NULL);
 		SDL_RenderPresent(renderer);
+
+		clock_gettime(CLOCK_MONOTONIC, &end);
+		int64_t remaining_ns = frame_ns - ns_between(start, end);
+
+		if (remaining_ns > 0) {
+			struct timespec delay = {.tv_sec = remaining_ns / NS_PER_SECOND,
+			                         .tv_nsec = remaining_ns % NS_PER_SECOND};
+			nanosleep(&delay, NULL);
+		}
 	}
 
 	scene_free(scene);

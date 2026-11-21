@@ -1,5 +1,5 @@
-#ifndef RREN_SCENE_H
-#define RREN_SCENE_H
+#ifndef RRAY_SCENE_H
+#define RRAY_SCENE_H
 
 #include "col.h"
 #include "util.h"
@@ -51,11 +51,12 @@ typedef struct {
 	VlaLight *lights;
 } Scene;
 
-static inline Shape make_sphere(Vec3 pos, float r, Color color, int specular, float reflective) {
+static inline Shape make_sphere(Vec3 pos, float r, Color color, int specular,
+                                float reflective) {
 	return (Shape){.type = SH_SPHERE,
 	               .color = color,
 	               .specular = specular,
-				   .reflective = reflective,
+	               .reflective = reflective,
 	               .Sphere = {.pos = pos, .r = r}};
 }
 

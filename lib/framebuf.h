@@ -1,5 +1,5 @@
-#ifndef RREN_FRAMEBUF_H
-#define RREN_FRAMEBUF_H
+#ifndef RRAY_FRAMEBUF_H
+#define RRAY_FRAMEBUF_H
 
 #include "col.h"
 #include <stdint.h>

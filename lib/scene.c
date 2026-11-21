@@ -41,14 +41,15 @@ Scene *scene_example() {
 
 	scene->i_ambient = 0.2;
 
-	vla_push(scene->elements,
-	         make_sphere((Vec3){0, -1, 3}, 1.0f, col_rgb(255u, 0u, 0u), 1500, 0.2));
-	vla_push(scene->elements,
-	         make_sphere((Vec3){2, 0, 4}, 1.0f, col_rgb(0u, 0u, 255u), 500, 0.3));
-	vla_push(scene->elements,
-	         make_sphere((Vec3){-2, 0, 4}, 1.0f, col_rgb(0u, 255u, 0u), 10, 0.4));
+	vla_push(scene->elements, make_sphere((Vec3){0, -1, 3}, 1.0f,
+	                                      col_rgb(255u, 0u, 0u), 1500, 0.2));
+	vla_push(scene->elements, make_sphere((Vec3){2, 0, 4}, 1.0f,
+	                                      col_rgb(0u, 0u, 255u), 500, 0.3));
+	vla_push(scene->elements, make_sphere((Vec3){-2, 0, 4}, 1.0f,
+	                                      col_rgb(0u, 255u, 0u), 10, 0.4));
 	// vla_push(scene->elements, make_sphere((Vec3){0, -5001, 0}, 5000.0f,
-	//                                      col_rgb(255u, 255u, 0u), 1000, 0.5));
+	//                                      col_rgb(255u, 255u, 0u), 1000,
+	//                                      0.5));
 
 	vla_push(scene->lights, make_plight((Vec3){2, 1, 0}, 0.6f));
 	vla_push(scene->lights, make_dlight((Vec3){1, 4, 4}, 0.2f));

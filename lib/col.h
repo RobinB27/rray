@@ -1,5 +1,5 @@
-#ifndef RREN_COL_H
-#define RREN_COL_H
+#ifndef RRAY_COL_H
+#define RRAY_COL_H
 
 #include "util.h"
 #include <stdint.h>
@@ -33,15 +33,17 @@ static inline Color col_mul(Color color, uint8_t k) {
 }
 
 static inline uint8_t ch_from_float(float v) {
-    if (!(v > 0.0f)) return 0;
-    if (v >= 255.0f) return 255;
-    return (uint8_t)(v + 0.5f);	// Add 0.5f to round to nearest int
+	if (!(v > 0.0f))
+		return 0;
+	if (v >= 255.0f)
+		return 255;
+	return (uint8_t)(v + 0.5f); // Add 0.5f to round to nearest int
 }
 
 static inline Color col_mulf(Color color, float f) {
-    return col_rgb(ch_from_float(CH_R(color) * f),
-                   ch_from_float(CH_G(color) * f),
-                   ch_from_float(CH_B(color) * f));
+	return col_rgb(ch_from_float(CH_R(color) * f),
+	               ch_from_float(CH_G(color) * f),
+	               ch_from_float(CH_B(color) * f));
 }
 
 static inline Color col_addk(Color color, uint8_t k) {

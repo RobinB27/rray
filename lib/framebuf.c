@@ -48,11 +48,11 @@ int fb_rect(FrameBuffer *fb, Color color, int x, int y, int w, int h) {
 	if (x >= fb->width || y >= fb->height || x + w < 0 || y + h < 0)
 		return EXIT_FAILURE;
 
-	int limx = imin(x + w, fb->width);
-	int limy = imin(y + h, fb->height);
+	int limx = mini(x + w, fb->width);
+	int limy = mini(y + h, fb->height);
 
-	for (int i = imax(y, 0); i < limy; i++)
-		for (int j = imax(x, 0); j < limx; j++)
+	for (int i = maxi(y, 0); i < limy; i++)
+		for (int j = maxi(x, 0); j < limx; j++)
 			fb->buf[i * fb->width + j] = color;
 	return EXIT_SUCCESS;
 }

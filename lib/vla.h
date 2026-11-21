@@ -1,5 +1,5 @@
-#ifndef RREN_VLA_H
-#define RREN_VLA_H
+#ifndef RRAY_VLA_H
+#define RRAY_VLA_H
 
 #include <stddef.h>
 
