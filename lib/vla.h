@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-// Generiv variable length array via cpp macros
+// Generic variable length array via cpp macros
 
 #define VLA_MAX_CAP ((size_t)1 << 24)
 

@@ -1,5 +1,5 @@
-#ifndef RREN_RAYTRACER_H
-#define RREN_RAYTRACER_H
+#ifndef RRAY_RAYTRACER_H
+#define RRAY_RAYTRACER_H
 
 #include "framebuf.h"
 #include "scene.h"

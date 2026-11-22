@@ -60,7 +60,7 @@ static inline Vec3 vec3_reflect(Vec3 A, Vec3 B) {
 	return vec3_sub(vec3_mulf(B, 2.0f * vec3_dot(B, A)), A);
 }
 
-static inline float vec3_norm(Vec3 a) { return sqrt(vec3_dot(a, a)); }
+static inline float vec3_norm(Vec3 a) { return sqrtf(vec3_dot(a, a)); }
 
 static inline Vec3 vec3_unit(Vec3 a) { return vec3_mulf(a, 1 / vec3_norm(a)); }
 
@@ -92,15 +92,15 @@ static inline Vec3 mat3_mulv(Mat3 A, Vec3 v) {
 }
 
 static inline Mat3 mat3_rotx(float x) {
-	return (Mat3){.arr = {1, 0, 0, 0, cos(x), -sin(x), 0, sin(x), cos(x)}};
+	return (Mat3){.arr = {1, 0, 0, 0, cosf(x), -sinf(x), 0, sinf(x), cosf(x)}};
 }
 
 static inline Mat3 mat3_roty(float x) {
-	return (Mat3){.arr = {cos(x), 0, sin(x), 0, 1, 0, -sin(x), 0, cos(x)}};
+	return (Mat3){.arr = {cosf(x), 0, sinf(x), 0, 1, 0, -sinf(x), 0, cosf(x)}};
 }
 
 static inline Mat3 mat3_rotz(float x) {
-	return (Mat3){.arr = {cos(x), -sin(x), 0, sin(x), cos(x), 0, 0, 0, 1}};
+	return (Mat3){.arr = {cosf(x), -sinf(x), 0, sinf(x), cosf(x), 0, 0, 0, 1}};
 }
 
 static inline Mat3 mat3_rot(Vec3 r) {

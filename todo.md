@@ -2,6 +2,8 @@
 
 ## Raytracer
 
+- [ ] Profiling
+- [ ] FPS / frametime overlay
 - [x] Plane primitive, e.g. to fix the floor precision errors
 - [ ] Multithreading framebuffer
 - [x] Triangle primitive

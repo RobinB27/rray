@@ -15,14 +15,30 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
+#define MODE_REALTIME 1
+#define MODE_STATIC 0
+
 int main(int argc, char *argv[]) {
-	(void)argc;
-	(void)argv;
+	if (argc > 1 &&
+	    (((strcmp(argv[1], "--help") == 0)) || (strcmp(argv[1], "-h") == 0))) {
+		printf("Usage: rray [OPTIONS]\n\nOptions:\n  -h, --help     Show this "
+		       "help message & exit\n  -s, --static   Non-realtime, only "
+		       "render one frame\n");
+		exit(EXIT_SUCCESS);
+	}
+
+	bool mode = MODE_REALTIME;
+
+	if (argc > 1 &&
+	    ((strcmp(argv[1], "--static") == 0) || (strcmp(argv[1], "-s") == 0)))
+		mode = MODE_STATIC;
 
 	if (!SDL_Init(SDL_INIT_VIDEO)) {
 		SDL_Log("SDL_Init failed: %s", SDL_GetError());
@@ -50,7 +66,7 @@ int main(int argc, char *argv[]) {
 	                      SDL_TEXTUREACCESS_STREAMING, FB_WIDTH, FB_HEIGHT);
 
 	if (!screen) {
-		SDL_Log("SDL_CreateTexture faiöed: %s", SDL_GetError());
+		SDL_Log("SDL_CreateTexture failed: %s", SDL_GetError());
 		return EXIT_FAILURE;
 	}
 
@@ -69,7 +85,7 @@ int main(int argc, char *argv[]) {
 	struct timespec previous = {.tv_sec = 0LL, .tv_nsec = 0LL};
 	const int64_t frame_ns = NS_PER_SECOND / 60;
 
-	bool running = true;
+	bool rendered = false, running = true;
 	while (running) {
 		struct timespec start, end;
 		clock_gettime(CLOCK_MONOTONIC, &start);
@@ -88,8 +104,13 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		// Top part should run so user can quit
+		if (rendered && (mode == MODE_STATIC))
+			continue;
+
 		double dt = ns_between(previous, start);
 		previous = start;
+		// printf("Frametime:\t%f\n", dt / NS_PER_SECOND);
 
 		float v = dt / NS_PER_SECOND;
 		Vec3 V = vec3_zero();
@@ -112,9 +133,10 @@ int main(int argc, char *argv[]) {
 		camera.pos = vec3_add(camera.pos, V);
 
 		Vec3 rot_acc = vec3_mulf(mouse_delta, 0.01);
-		camera.rot.y += rot_acc.x;
 		camera.rot.x += rot_acc.y;
-		camera.rot = vec3_clamp(camera.rot, -PI, PI);
+		camera.rot.y += rot_acc.x;
+		camera.rot.x = clampf(camera.rot.x, -PI / 2, PI / 2);
+		camera.rot.y = clampf(camera.rot.y, -PI, PI);
 
 		// rray render
 		render(fb, camera, scene);
@@ -134,6 +156,7 @@ int main(int argc, char *argv[]) {
 			                         .tv_nsec = remaining_ns % NS_PER_SECOND};
 			nanosleep(&delay, NULL);
 		}
+		rendered = true;
 	}
 
 	scene_free(scene);
