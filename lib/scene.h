@@ -78,6 +78,5 @@ static inline Light make_dlight(Vec3 dir, float i) {
 
 Scene *scene_make();
 void scene_free(Scene *scene);
-Scene *scene_example();
 
 #endif

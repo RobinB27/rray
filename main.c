@@ -2,6 +2,7 @@
 #include "lib/raytracer.h"
 #include "lib/scene.h"
 #include "lib/util.h"
+#include "lib/demo.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -111,6 +112,9 @@ int main(int argc, char *argv[]) {
 		double dt = ns_between(previous, start);
 		previous = start;
 		// printf("Frametime:\t%f\n", dt / NS_PER_SECOND);
+
+		// for demo
+		update_example(scene, dt);
 
 		float v = dt / NS_PER_SECOND;
 		Vec3 V = vec3_zero();

@@ -10,6 +10,8 @@ Move around the scene with Arrow keys or `WASD` and look around using the mouse.
 
 ## Build from source
 
+Running requires a POSIX-compliant environment, e.g. Linux or MacOS.
+
 Install [`SDL3`](https://libsdl.org/). Optionally, install [`OpenMP`](https://www.openmp.org/) for multithreading support & improved performance. Build with [`CMake`](https://cmake.org/). First run:
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release

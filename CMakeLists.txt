@@ -14,6 +14,7 @@ add_executable(rray main.c
     lib/vla.c
     lib/scene.c
     lib/raytracer.c
+    lib/demo.c
 )
 
 # math.h isn't in libc on linux, needs libm
