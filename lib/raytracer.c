@@ -82,7 +82,6 @@ RayResult intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
 RayResult intersect_ray_tri(Vec3 O, Vec3 D, Shape *shape) {
 	// Solve linear system for ray & tri intersection
 	// FCG Ch. 4.4
-
 	Vec3 A = shape->Tri.A, B = shape->Tri.B, C = shape->Tri.C;
 	Mat3 M = (Mat3){.arr = {A.x - B.x, A.x - C.x, D.x, A.y - B.y, A.y - C.y,
 	                        D.y, A.z - B.z, A.z - C.z, D.z}};

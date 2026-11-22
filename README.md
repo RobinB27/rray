@@ -4,9 +4,18 @@
 
 # rray
 
-Realtime Software Raytracer in C
+Realtime software Raytracer in C
 
-Move around the scene with Arrow keys or `WASD` and look around using the mouse. `ESC` quits the renderer.
+**Usage:** Move around the scene with Arrow keys or `WASD` and look around using the mouse. Use `ESC` to quit.
+
+**Features**
+- Sphere & triangle primitives
+- Phong lighting with point, directional & ambient lights
+- Recursive reflections
+- Free camera movement
+- OpenMP parallel rendering
+
+Stable 30fps at 1280x720 on a Ryzen 5 7535U. 
 
 ## Build from source
 
