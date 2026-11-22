@@ -3,8 +3,8 @@
 
 #include "math.h"
 #include "stdlib.h"
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <time.h>
 
 #define PI 3.14159265358979323846
@@ -18,6 +18,9 @@ typedef struct {
 	float arr[9];
 } Mat3;
 
+Vec3 solve_cramer(Mat3 A, Vec3 y);
+float solve_cramerf(Mat3 A, Vec3 y, int ind);
+
 static inline Vec3 vec3_zero() { return (Vec3){0, 0, 0}; }
 
 static inline bool vec3_is_zero(Vec3 v) {
@@ -26,9 +29,9 @@ static inline bool vec3_is_zero(Vec3 v) {
 
 static inline Vec3 vec3_of_arr(float arr[3]) {
 	return (Vec3){
-		.x=arr[0],
-		.y=arr[1],
-		.z=arr[2],
+	    .x = arr[0],
+	    .y = arr[1],
+	    .z = arr[2],
 	};
 }
 
@@ -38,6 +41,11 @@ static inline Vec3 vec3_add(Vec3 A, Vec3 B) {
 
 static inline float vec3_dot(Vec3 A, Vec3 B) {
 	return A.x * B.x + A.y * B.y + A.z * B.z;
+}
+
+static inline Vec3 vec3_cross(Vec3 A, Vec3 B) {
+	return (Vec3){A.y * B.z - A.z * B.y, A.z * B.x - A.x * B.z,
+	              A.x * B.y - A.y * B.x};
 }
 
 static inline Vec3 vec3_mulf(Vec3 A, float f) {
@@ -76,9 +84,9 @@ static inline Mat3 mat3_mul(Mat3 a, Mat3 b) {
 static inline Vec3 mat3_mulv(Mat3 A, Vec3 v) {
 	float v_arr[3] = {v.x, v.y, v.z};
 	float acc[3] = {0};
-	for (int i = 0; i < 3; i++) 
-		for (int j = 0; j < 3; j++) 
-			acc[i] += A.arr[3*i + j]*v_arr[j];
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			acc[i] += A.arr[3 * i + j] * v_arr[j];
 
 	return vec3_of_arr(acc);
 }
@@ -119,12 +127,14 @@ static inline float clampf(float v, float lo, float hi) {
 	return minf(maxf(v, lo), hi);
 }
 
+static inline float equalf(float a, float b, float eps) {
+	return fabsf(a - b) <= eps;
+}
+
 static inline Vec3 vec3_clamp(Vec3 v, float lo, float hi) {
-	return (Vec3){
-		.x=clampf(v.x, lo, hi),
-		.y=clampf(v.y, lo, hi),
-		.z=clampf(v.z, lo, hi)
-	};
+	return (Vec3){.x = clampf(v.x, lo, hi),
+	              .y = clampf(v.y, lo, hi),
+	              .z = clampf(v.z, lo, hi)};
 }
 
 #endif

@@ -6,7 +6,7 @@
 #include "vla.h"
 #include <stdlib.h>
 
-typedef enum { SH_SPHERE, SH_CUBE } ShapeType;
+typedef enum { SH_SPHERE, SH_TRI } ShapeType;
 
 typedef struct {
 	ShapeType type;
@@ -19,11 +19,10 @@ typedef struct {
 			float r;
 		} Sphere;
 		struct {
-			Vec3 pos;
-			float w;
-			float h;
-			float l;
-		} Cube;
+			Vec3 A;
+			Vec3 B;
+			Vec3 C;
+		} Tri;
 	};
 } Shape;
 
@@ -58,6 +57,15 @@ static inline Shape make_sphere(Vec3 pos, float r, Color color, int specular,
 	               .specular = specular,
 	               .reflective = reflective,
 	               .Sphere = {.pos = pos, .r = r}};
+}
+
+static inline Shape make_tri(Vec3 A, Vec3 B, Vec3 C, Color color, int specular,
+                             float reflective) {
+	return (Shape){.type = SH_TRI,
+	               .color = color,
+	               .specular = specular,
+	               .reflective = reflective,
+	               .Tri = {A, B, C}};
 }
 
 static inline Light make_plight(Vec3 pos, float i) {

@@ -20,10 +20,16 @@ IntersectResult closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min,
 
 	for (unsigned i = 0; i < scene->elements->len; i++) {
 		Shape *shape = &scene->elements->data[i];
-		if (shape->type != SH_SPHERE)
-			continue;
 
-		RayResult res = intersect_ray_sphere(O, D, shape);
+		RayResult res = (RayResult){.t1 = 0.0f, .t2 = 0.0f};
+		switch (shape->type) {
+		case SH_SPHERE:
+			res = intersect_ray_sphere(O, D, shape);
+			break;
+		case SH_TRI:
+			res = intersect_ray_tri(O, D, shape);
+			break;
+		}
 
 		if (t_min < res.t1 && res.t1 < t_max && res.t1 < closest_t) {
 			closest_t = res.t1;
@@ -46,12 +52,8 @@ IntersectResult closest_intersection(Scene *scene, Vec3 O, Vec3 D, float t_min,
     @return         Both possible intersections
 */
 RayResult intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
-	if (shape->type != SH_SPHERE) {
-		fprintf(stderr, "intersect_ray_sphere got non-sphere shape\n");
-		exit(EXIT_FAILURE);
-	}
-
 	// Solve quadr. eq. for ray & sphere intersection
+	// CGfS Ch. 2
 
 	float r = shape->Sphere.r;
 	Vec3 CO = vec3_sub(O, shape->Sphere.pos);
@@ -63,8 +65,40 @@ RayResult intersect_ray_sphere(Vec3 O, Vec3 D, Shape *shape) {
 	if (disc < 0)
 		return (RayResult){TRACE_LIMIT, TRACE_LIMIT};
 
-	return (RayResult){(-b + sqrt(disc)) / (2 * a),
-	                   (-b - sqrt(disc)) / (2 * a)};
+	return (RayResult){.t1 = (-b + sqrt(disc)) / (2 * a),
+	                   .t2 = (-b - sqrt(disc)) / (2 * a)};
+}
+
+RayResult intersect_ray_tri(Vec3 O, Vec3 D, Shape *shape) {
+	// Solve linear system for ray & tri intersection
+	// FCG Ch. 4.4
+
+	Vec3 A = shape->Tri.A, B = shape->Tri.B, C = shape->Tri.C;
+	Vec3 N = vec3_cross(vec3_sub(B, A), vec3_sub(C, A));
+
+	// Parallel: No intersection
+	float denom = vec3_dot(N, D);
+	if (denom == 0.0f)
+		return (RayResult){.t1 = 0.0f, .t2 = 0.0f};
+
+	// Coplanar: Don't render
+	float dist = vec3_dot(N, vec3_sub(O, A));
+	if (denom == 0.0f && dist == 0.0f)
+		return (RayResult){.t1 = 0.0f, .t2 = 0.0f};
+
+	// General: Find intersection
+	Mat3 M = (Mat3){.arr = {A.x - B.x, A.x - C.x, D.x, A.y - B.y, A.y - C.y,
+	                        D.y, A.z - B.z, A.z - C.z, D.z}};
+	Vec3 Y = (Vec3){A.x - O.x, A.y - O.y, A.z - O.z};
+
+	// results x,y are barycentric coords on triangle. z is intersection's t
+	Vec3 res = solve_cramer(M, Y);
+
+	// Point on plane isn't on triangle
+	if (res.x < 0 || res.y < 0 || res.x + res.y > 1)
+		return (RayResult){.t1 = 0.0f, .t2 = 0.0f};
+
+	return (RayResult){.t1 = res.z, .t2 = res.z};
 }
 
 /**
@@ -138,9 +172,17 @@ Color trace_ray(Scene *scene, Vec3 O, Vec3 D, float t_min, float t_max,
 		return C_BLACK;
 
 	// Compute intersection P and normal N
-	// Warning: Only supports Spheres
-	Vec3 P = vec3_add(O, vec3_mulf(D, res.t));
-	Vec3 N = vec3_sub(P, res.sh->Sphere.pos);
+	Vec3 P, N;
+	P = vec3_add(O, vec3_mulf(D, res.t));
+	switch (res.sh->type) {
+	case (SH_SPHERE):
+		N = vec3_sub(P, res.sh->Sphere.pos);
+		break;
+	case (SH_TRI):
+		N = vec3_cross(vec3_sub(res.sh->Tri.B, res.sh->Tri.A),
+		               vec3_sub(res.sh->Tri.C, res.sh->Tri.A));
+		break;
+	}
 	N = vec3_unit(N);
 
 	Color local_col = col_mulf(

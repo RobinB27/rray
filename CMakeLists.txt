@@ -7,6 +7,7 @@ endif()
 
 find_package(SDL3 REQUIRED CONFIG)
 add_executable(rray main.c
+    lib/util.c
     lib/framebuf.c
     lib/vla.c
     lib/scene.c

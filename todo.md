@@ -2,9 +2,9 @@
 
 ## Raytracer
 
-- [ ] Plane primitive, e.g. to fix the floor precision errors
+- [x] Plane primitive, e.g. to fix the floor precision errors
 - [ ] Multithreading framebuffer
-- [ ] Triangle primitive
+- [x] Triangle primitive
 - [ ] Moving Light
 - [x] Camera movement
 - [ ] IPC: Renderer in subprocess, main process is shell 

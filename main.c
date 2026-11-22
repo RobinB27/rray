@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 		double dt = ns_between(previous, start);
 		previous = start;
 
-		float v = dt / 1000000000LL;
+		float v = dt / NS_PER_SECOND;
 		Vec3 V = vec3_zero();
 
 		const bool *keys = SDL_GetKeyboardState(NULL);
